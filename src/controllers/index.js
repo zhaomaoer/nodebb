@@ -1,5 +1,6 @@
 "use strict";
 
+
 var async = require('async'),
 	nconf = require('nconf'),
 	validator = require('validator'),
@@ -30,7 +31,6 @@ var Controllers = {
 	api: require('./api'),
 	admin: require('./admin')
 };
-
 
 Controllers.home = function(req, res, next) {
 	var route = meta.config.homePageRoute || meta.config.homePageCustom || 'categories',
@@ -77,13 +77,18 @@ Controllers.reset = function(req, res, next) {
 
 };
 
+
 Controllers.login = function(req, res, next) {
 	var data = {},
 		loginStrategies = require('../routes/authentication').getLoginStrategies(),
 		emailersPresent = plugins.hasListeners('action:email.send');
-
+	
 	var registrationType = meta.config.registrationType || 'normal';
-
+	var http = require('http');
+	var url = require('url');
+	var OAuth = require('wechat-oauth');
+	var client = new OAuth('wx0dc7749837133b06', 'd4624c36b6795d1d99dcf0547af5443d');
+	var arg = url.parse(req.url, true).query;
 	data.alternate_logins = loginStrategies.length > 0;
 	data.authentication = loginStrategies;
 	data.showResetLink = emailersPresent;
@@ -93,10 +98,20 @@ Controllers.login = function(req, res, next) {
 	data.breadcrumbs = helpers.buildBreadcrumbs([{text: '[[global:login]]'}]);
 	data.error = req.flash('error')[0];
 	data.title = '[[pages:login]]';
-
-	res.render('login', data);
+	if(arg.code!=undefined){
+   		data.code =arg.code;
+		client.getAccessToken(arg.code, function (err, result) {
+  	  		//var accessToken = result.data.access_token;
+   	 		var openid = result.data.openid;
+   	 		data.openid=openid+"@qq.com";
+   	 		data.password="123456";
+			res.render('login', data);
+   	 	});
+	}else{
+		res.render('login', data);
+	}
+	//res.render('login', data);
 };
-
 Controllers.register = function(req, res, next) {
 	var registrationType = meta.config.registrationType || 'normal';
 

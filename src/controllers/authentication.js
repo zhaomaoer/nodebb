@@ -134,6 +134,7 @@ authenticationController.login = function(req, res, next) {
 	}
 };
 
+
 function continueLogin(req, res, next) {
 	passport.authenticate('local', function(err, userData, info) {
 		if (err) {

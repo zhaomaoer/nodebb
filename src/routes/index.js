@@ -31,6 +31,8 @@ function mainRoutes(app, middleware, controllers) {
 	setupPageRoute(app, '/search/:term?', middleware, [middleware.guestSearchingAllowed], controllers.search.search);
 	setupPageRoute(app, '/reset/:code?', middleware, [], controllers.reset);
 	setupPageRoute(app, '/tos', middleware, [], controllers.termsOfUse);
+
+
 }
 
 function topicRoutes(app, middleware, controllers) {

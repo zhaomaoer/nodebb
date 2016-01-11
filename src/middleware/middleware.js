@@ -83,8 +83,10 @@ middleware.redirectToAccountIfLoggedIn = function(req, res, next) {
 		if (err) {
 			return next(err);
 		}
+	//return next();
 		controllers.helpers.redirect(res, '/user/' + userslug);
 	});
+
 };
 
 middleware.redirectToLoginIfGuest = function(req, res, next) {

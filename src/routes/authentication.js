@@ -10,7 +10,7 @@
 		controllers = require('../controllers'),
 		plugins = require('../plugins'),
 		hotswap = require('../hotswap'),
-
+		//wechatloginStrategies = [],
 		loginStrategies = [];
 
 	Auth.initialize = function(app, middleware) {
@@ -29,6 +29,7 @@
 	Auth.getLoginStrategies = function() {
 		return loginStrategies;
 	};
+
 
 	Auth.reloadRoutes = function(callback) {
 		var router = express.Router();
