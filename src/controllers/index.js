@@ -87,6 +87,7 @@ Controllers.login = function(req, res, next) {
 	var http = require('http');
 	var url = require('url');
 	var OAuth = require('wechat-oauth');
+	var user = require('../user');
 	var client = new OAuth('wx0dc7749837133b06', 'd4624c36b6795d1d99dcf0547af5443d');
 	var arg = url.parse(req.url, true).query;
 	data.alternate_logins = loginStrategies.length > 0;
@@ -95,7 +96,8 @@ Controllers.login = function(req, res, next) {
 	data.allowLocalLogin = parseInt(meta.config.allowLocalLogin, 10) === 1 || parseInt(req.query.local, 10) === 1;
 	data.allowRegistration = registrationType === 'normal' || registrationType === 'admin-approval';
 	data.allowLoginWith = '[[login:' + (meta.config.allowLoginWith || 'username-email') + ']]';
-	data.breadcrumbs = helpers.buildBreadcrumbs([{text: '[[global:login]]'}]);
+	//data.breadcrumbs = helpers.buildBreadcrumbs([{text: '[[global:login]]'}]);
+	data.breadcrumbs = '';
 	data.error = req.flash('error')[0];
 	data.title = '[[pages:login]]';
 	if(arg.code!=undefined){
@@ -105,8 +107,18 @@ Controllers.login = function(req, res, next) {
    	 		var openid = result.data.openid;
    	 		data.openid=openid+"@qq.com";
    	 		data.password="123456";
-			res.render('login', data);
-   	 	});
+			//res.render('login', data);
+			 user.getUidByEmail(data.openid,function(err, uid) {
+			if (err) {
+				return next(err);
+			}else if(uid){
+				res.render('login', data);
+			}else{
+				//res.render('login', data);
+				res.render('wechat');//用户不存在
+			}
+	});
+ 	 	});
 	}else{
 		res.render('login', data);
 	}
