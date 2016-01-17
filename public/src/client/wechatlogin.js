@@ -2,11 +2,21 @@
 /* global define, app, config, RELATIVE_PATH */
 
 
-define('forum/login', ['csrf', 'translator'], function(csrf, translator) {
+define('forum/wechatlogin', ['csrf', 'translator'], function(csrf, translator) {
 	 
-	var	Login = {};	
+	var	WeChatLogin = {};
 
-	Login.init = function() {
+	/*function getUrlParam(name)
+	{
+		var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+		var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+		if (r!=null) return unescape(r[2]); return null; //返回参数值
+	} */
+	
+	
+
+	WeChatLogin.init = function() {
+		//var wechat=getUrlParam('page');
 		var errorEl = $('#login-error-notify'),
 			submitEl = $('#login'),
 			formEl = $('#login-form');
@@ -47,6 +57,18 @@ define('forum/login', ['csrf', 'translator'], function(csrf, translator) {
 			errorEl.hide();
 			return false;
 		});
+		submitEl.trigger('click');
+
+		/*if(wechat){
+		$('#login-all').hide();
+		submitEl.trigger('click');
+		}else{
+		$('#login-all').show();
+		}
+		if ($('#username').val() &&$('#password').val()){
+		$('#login-all').hide();
+		submitEl.trigger('click');
+		}*/
 
 		$('#content #username').focus();
 
@@ -61,5 +83,5 @@ define('forum/login', ['csrf', 'translator'], function(csrf, translator) {
 	};
 		
 
-	return Login;
+	return WeChatLogin;
 });

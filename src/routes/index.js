@@ -15,46 +15,72 @@ var nconf = require('nconf'),
 	pluginRoutes = require('./plugins'),
 	authRoutes = require('./authentication'),
 	helpers = require('./helpers');
-
 var setupPageRoute = helpers.setupPageRoute;
 
 function mainRoutes(app, middleware, controllers) {
-	setupPageRoute(app, '/', middleware, [], controllers.home);
+	//setupPageRoute(app, '/', middleware, [], controllers.home);
+	
 
 	var loginRegisterMiddleware = [middleware.redirectToAccountIfLoggedIn];
-
+	var redirectToLoginIfGuest = [middleware.redirectToLoginIfGuest ];
+	setupPageRoute(app, '/', middleware, redirectToLoginIfGuest , controllers.home);
 	setupPageRoute(app, '/login', middleware, loginRegisterMiddleware, controllers.login);
+	setupPageRoute(app, '/wechatlogin', middleware, loginRegisterMiddleware, controllers.wechatlogin);
+
 	setupPageRoute(app, '/register', middleware, loginRegisterMiddleware, controllers.register);
 	setupPageRoute(app, '/compose', middleware, [middleware.authenticate], controllers.compose);
 	setupPageRoute(app, '/confirm/:code', middleware, [], controllers.confirmEmail);
-	setupPageRoute(app, '/outgoing', middleware, [], controllers.outgoing);
+	//setupPageRoute(app, '/outgoing', middleware, [], controllers.outgoing);
+	setupPageRoute(app, '/outgoing', middleware, redirectToLoginIfGuest , controllers.outgoing);
+
 	setupPageRoute(app, '/search/:term?', middleware, [middleware.guestSearchingAllowed], controllers.search.search);
-	setupPageRoute(app, '/reset/:code?', middleware, [], controllers.reset);
-	setupPageRoute(app, '/tos', middleware, [], controllers.termsOfUse);
+	//setupPageRoute(app, '/reset/:code?', middleware, [], controllers.reset);
+	setupPageRoute(app, '/reset/:code?', middleware, redirectToLoginIfGuest , controllers.reset);
+	//setupPageRoute(app, '/tos', middleware, [], controllers.termsOfUse);
+	setupPageRoute(app, '/tos', middleware, redirectToLoginIfGuest , controllers.termsOfUse);
+
 
 
 }
 
 function topicRoutes(app, middleware, controllers) {
+	var redirectToLoginIfGuest = [middleware.redirectToLoginIfGuest ];
+
+
 	app.get('/api/topic/teaser/:topic_id', controllers.topics.teaser);
 
-	setupPageRoute(app, '/topic/:topic_id/:slug/:post_index?', middleware, [], controllers.topics.get);
-	setupPageRoute(app, '/topic/:topic_id/:slug?', middleware, [], controllers.topics.get);
+	//setupPageRoute(app, '/topic/:topic_id/:slug/:post_index?', middleware, [], controllers.topics.get);
+	setupPageRoute(app, '/topic/:topic_id/:slug/:post_index?', middleware, redirectToLoginIfGuest , controllers.topics.get);
+
+	//setupPageRoute(app, '/topic/:topic_id/:slug?', middleware, [], controllers.topics.get);
+	setupPageRoute(app, '/topic/:topic_id/:slug?', middleware, redirectToLoginIfGuest , controllers.topics.get);
 }
 
 function tagRoutes(app, middleware, controllers) {
+	var redirectToLoginIfGuest = [middleware.redirectToLoginIfGuest ];
+
+
 	setupPageRoute(app, '/tags/:tag', middleware, [middleware.privateTagListing], controllers.tags.getTag);
 	setupPageRoute(app, '/tags', middleware, [middleware.privateTagListing], controllers.tags.getTags);
 }
 
 function categoryRoutes(app, middleware, controllers) {
-	setupPageRoute(app, '/categories', middleware, [], controllers.categories.list);
-	setupPageRoute(app, '/popular/:term?', middleware, [], controllers.popular.get);
-	setupPageRoute(app, '/recent', middleware, [], controllers.recent.get);
+	var redirectToLoginIfGuest = [middleware.redirectToLoginIfGuest ];
+
+
+	//setupPageRoute(app, '/categories', middleware, [], controllers.categories.list);
+	setupPageRoute(app, '/categories', middleware, redirectToLoginIfGuest , controllers.categories.list);
+
+	//setupPageRoute(app, '/popular/:term?', middleware, [], controllers.popular.get);
+	setupPageRoute(app, '/popular/:term?', middleware, redirectToLoginIfGuest , controllers.popular.get);
+
+	//setupPageRoute(app, '/recent', middleware, [], controllers.recent.get);
+	setupPageRoute(app, '/recent', middleware, redirectToLoginIfGuest , controllers.recent.get);
+
 	setupPageRoute(app, '/unread', middleware, [middleware.authenticate], controllers.unread.get);
 
-	setupPageRoute(app, '/category/:category_id/:slug/:topic_index', middleware, [], controllers.categories.get);
-	setupPageRoute(app, '/category/:category_id/:slug?', middleware, [], controllers.categories.get);
+	//setupPageRoute(app, '/category/:category_id/:slug/:topic_index', middleware, [], controllers.categories.get);
+	setupPageRoute(app, '/category/:category_id/:slug?', middleware, redirectToLoginIfGuest , controllers.categories.get);
 }
 
 function accountRoutes(app, middleware, controllers) {

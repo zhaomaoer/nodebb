@@ -82,6 +82,24 @@ Controllers.login = function(req, res, next) {
 	var data = {},
 		loginStrategies = require('../routes/authentication').getLoginStrategies(),
 		emailersPresent = plugins.hasListeners('action:email.send');
+	var registrationType = meta.config.registrationType || 'normal';
+	data.alternate_logins = loginStrategies.length > 0;
+	data.authentication = loginStrategies;
+	data.showResetLink = emailersPresent;
+	data.allowLocalLogin = parseInt(meta.config.allowLocalLogin, 10) === 1 || parseInt(req.query.local, 10) === 1;
+	data.allowRegistration = registrationType === 'normal' || registrationType === 'admin-approval';
+	data.allowLoginWith = '[[login:' + (meta.config.allowLoginWith || 'username-email') + ']]';
+	//data.breadcrumbs = helpers.buildBreadcrumbs([{text: '[[global:login]]'}]);
+	data.breadcrumbs = '';
+	data.error = req.flash('error')[0];
+	data.title = '[[pages:login]]';
+	res.render('login', data);
+};
+
+Controllers.wechatlogin = function(req, res, next) {
+	var data = {},
+		loginStrategies = require('../routes/authentication').getLoginStrategies(),
+		emailersPresent = plugins.hasListeners('action:email.send');
 	
 	var registrationType = meta.config.registrationType || 'normal';
 	var http = require('http');
@@ -112,18 +130,19 @@ Controllers.login = function(req, res, next) {
 			if (err) {
 				return next(err);
 			}else if(uid){
-				res.render('login', data);
+				res.render('wechatlogin', data);
 			}else{
 				//res.render('login', data);
-				res.render('wechat');//用户不存在
+				res.render('wechaterror');//用户不存在
 			}
 	});
  	 	});
 	}else{
-		res.render('login', data);
+		res.render('403');
 	}
-	//res.render('login', data);
 };
+
+
 Controllers.register = function(req, res, next) {
 	var registrationType = meta.config.registrationType || 'normal';
 
